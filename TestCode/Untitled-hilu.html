@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Cao Hoàng Trụ!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@400;700;900&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            background-color: #0d0d1a;
+            color: white;
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+        }
+
+        /* --- CẤU TRÚC SLIDE --- */
+        .slide {
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.8s ease-in-out;
+            position: absolute; 
+            top: 0; left: 0;
+        }
+        
+        .slide.active { display: flex; z-index: 10; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- NÚT BẤM CHUYỂN SLIDE --- */
+        .btn-next {
+            margin-top: 30px;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #ff00de, #3333ff);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 222, 0.5);
+            transition: transform 0.2s;
+            z-index: 50;
+        }
+        .btn-next:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(255, 0, 222, 0.8); }
+
+        /* --- MÀN 1 & 2: KHÓA VÀ MẬT KHẨU --- */
+        .lock-icon { font-size: 80px; cursor: pointer; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 15px #0fa); }
+        .sys-msg { color: #0fa; margin-top: 20px; font-family: monospace; font-size: 1.2rem; }
+        .pass-container { background: #1a1a3a; padding: 40px; border-radius: 15px; border: 2px solid #0fa; box-shadow: 0 0 20px rgba(0, 255, 170, 0.4); }
+        .pass-input { font-size: 3rem; text-align: center; letter-spacing: 15px; width: 200px; background: transparent; color: white; border: none; border-bottom: 3px solid #0fa; outline: none; font-family: monospace; font-weight: bold; }
+        .hint { color: #ff99cc; font-style: italic; margin-top: 15px; font-size: 0.95rem;}
+        .shake { animation: shakeError 0.4s; border-color: red !important; box-shadow: 0 0 20px red !important; }
+        @keyframes shakeError { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } }
+
+        /* --- SLIDE NGÔN NGỮ (Trượt xuống) --- */
+        #slide-languages { background-color: #0d0d1a; overflow: hidden; justify-content: flex-start; padding-top: 50px;}
+        #language-list {
+            margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; align-items: center;
+            animation: slideDownList 18s linear infinite; 
+        }
+        #language-list li { font-size: 2rem; font-weight: bold; margin-bottom: 25px; color: #fff; text-shadow: 0 0 5px #ff00de, 0 0 15px #0fa; }
+        @keyframes slideDownList { from { transform: translateY(100vh); } to { transform: translateY(-100%); } }
+
+        /* --- SLIDE 1: CHỈ TEXT --- */
+        .neon-text { font-family: 'Dancing Script', cursive; font-size: 4.5rem; color: #fff; text-shadow: 0 0 10px #ff00de, 0 0 20px #ff00de, 0 0 40px #ff00de; margin-bottom: 20px; }
+        .wish-text { font-size: 1.4rem; line-height: 1.8; max-width: 800px; color: #e0e0e0; }
+        .highlight { color: #0fa; font-weight: bold; }
+
+        /* --- SLIDE 2: ALBUM HÌNH ẢNH --- */
+        .image-grid { 
+            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; 
+            margin-bottom: 20px; max-width: 900px;
+        }
+        .image-grid img { 
+            width: 260px; height: 180px; object-fit: cover; border-radius: 8px; 
+            border: 4px solid #fff; box-shadow: 0 8px 15px rgba(0,0,0,0.6); 
+            transition: transform 0.3s;
+        }
+        .image-grid img:nth-child(1) { transform: rotate(-3deg); }
+        .image-grid img:nth-child(2) { transform: rotate(2deg); }
+        .image-grid img:nth-child(3) { transform: rotate(-1deg); }
+        .image-grid img:nth-child(4) { transform: rotate(4deg); }
+        .image-grid img:nth-child(5) { transform: rotate(-2deg); }
+        .image-grid img:nth-child(6) { transform: rotate(1deg); }
+        
+        .image-grid img:hover { transform: scale(1.2) rotate(0deg); z-index: 20; box-shadow: 0 15px 30px #0fa; }
+        .gratitude-text { font-size: 1.2rem; line-height: 1.6; max-width: 800px; font-style: italic; color: #ffdd99; margin-top: 10px; }
+
+        /* --- SLIDE 3: VIDEO --- */
+        .video-container { margin-bottom: 20px; border-radius: 15px; overflow: hidden; border: 3px solid #0fa; box-shadow: 0 0 30px rgba(0, 255, 170, 0.4); }
+        .video-container video { width: 700px; max-width: 90vw; height: auto; display: block; }
+        .love-text { font-size: 1.3rem; line-height: 1.6; max-width: 800px; color: #ff99cc; font-weight: bold; }
+
+        /* --- SLIDE CUỐI: KHÉP RÈM --- */
+        #slide-curtain { background: #000; overflow: hidden; }
+        #curtain-top, #curtain-bottom {
+            position: absolute; left: 0; width: 100vw; height: 50vh; background: #660000; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.9); z-index: 20;
+            transition: transform 1.5s ease-out;
+        }
+        #curtain-top { top: -50vh; border-bottom: 5px solid #d4af37; }
+        #curtain-bottom { bottom: -50vh; border-top: 5px solid #d4af37; }
+        
+        #slide-curtain.closed #curtain-top { transform: translateY(50vh); }
+        #slide-curtain.closed #curtain-bottom { transform: translateY(-50vh); }
+
+        #final-wishes { z-index: 25; text-align: center; color: #fff; position: relative; opacity: 0; transition: opacity 1s 1.5s; max-width: 800px; }
+        #slide-curtain.closed #final-wishes { opacity: 1; }
+
+        .final-title { font-family: 'Dancing Script', cursive; font-size: 5rem; text-shadow: 0 0 10px #0fa, 0 0 30px #0fa; color: #fff; margin-bottom: 20px; }
+        .final-msg { font-size: 1.6rem; font-weight: bold; line-height: 1.8; color: #ffdd99; }
+        .highlight-wishes { color: #0fa; font-weight: bold; text-transform: uppercase; font-size: 2rem;}
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="slide-lock" class="slide active">
+        <div class="lock-icon" onclick="goToSlide('slide-pass')">📦</div>
+        <p class="sys-msg">Phát hiện một kho tàng vô giá!<br>Nhấn vào để nhập mã xác minh...</p>
+    </div>
+
+    <div id="slide-pass" class="slide">
+        <div class="pass-container" id="pass-box">
+            <h2 style="margin-top:0;">Xác nhận danh tính</h2>
+            <input type="password" id="pass-input" class="pass-input" maxlength="4" placeholder="••••" autocomplete="off">
+            <p class="hint">(Gợi ý: Mật khẩu 4 số, ngày mà Trụ đăng nhập server Việt Nam )</p>
+        </div>
+    </div>
+
+    <div id="slide-languages" class="slide">
+        <ul id="language-list">
+            <li>Happy Birthday</li>
+            <li>Joyeux anniversaire</li>
+            <li>¡Feliz cumpleaños!</li>
+            <li>Buon compleanno!</li>
+            <li>Alles Gute zum Geburtstag!</li>
+            <li>Feliz aniversário!</li>
+            <li>С днем рождения! (S dnem rozhdeniya!)</li>
+            <li>祝你生日快乐 (Zhù nǐ shēngrì kuàilè)</li>
+            <li>祝你生日快樂 (Zhù nǐ shēngrì kuàilè)</li>
+            <li>Fijne verjaardag!</li>
+            <li>생일 축하해 (Saeng-il chuk-ha-hae)</li>
+            <li>יום הולדת שמח (Yom Huledet Same’ach)</li>
+            <li>عيد ميلاد سعيد (Eid milad sa’id)</li>
+            <li>जन्मदिन मुबारक (Janmadin mubarak)</li>
+            <li>Doğum günün kutlu olsun!</li>
+            <li>Χρόνια Πολλά (Chronia Polla)</li>
+            <li>Tillykke med fødselsdagen!</li>
+            <li>สุขสันต์วันเกิด (Suk-san wan-goet)</li>
+            <li>Wszystkiego najlepszego z okazji urodzin!</li>
+        </ul>
+        <button class="btn-next" style="position: absolute; bottom: 40px;" onclick="goToSlide('slide-1')">Bắt đầu Trải nghiệm ➡️</button>
+    </div>
+
+    <div id="slide-1" class="slide">
+        <h1 class="neon-text">Chúc Mừng Sinh Nhật Trụ! 🎉</h1>
+        <p class="wish-text">
+            Tuổi mới chúc Trụ luôn giữ vững phong độ, làm việc gì cũng đạt được sự cân bằng hoàn hảo giữa <span class="highlight">cuộc sống và học tập</span> nhé. <br><br>
+            Chúc Trụ gặp thật nhiều may mắn trong tuổi mới! Chúc mọi kế hoạch đều thành công tốt đẹp! Chúc tuổi mới thật rực rỡ và vững vàng, học đỉnh và mãi là chú bướm xịn sò! <span class="highlight">Người bạn tuyệt vời</span> chúc <span class="highlight">Ông</span> nhiều sức khỏe!
+        </p>
+        <button class="btn-next" onclick="goToSlide('slide-2')">Xem khoảnh khắc 2 ➡️</button>
+    </div>
+
+    <div id="slide-2" class="slide">
+        <div class="image-grid">
+            <img src="5fead8d6-78e1-4dc7-8a07-557dce393f4a.jpg" alt="Ảnh 1">
+            <img src="gen-h-z7617989530019_c65e4895db47af093719fe35a065cba8.jpg" alt="Ảnh 2">
+            <img src="gen-h-z7618053858685_a35a3668ce709ef01fcf0a71e7634bfb.jpg" alt="Ảnh 3">
+            <img src="gen-h-z7618053859525_b9d4c41bfc703331820898dba0d8caf6.jpg" alt="Ảnh 4">
+            <img src="gen-h-z7618053866735_f9bc03d7cdc7e6e7727667b8967716f1.jpg" alt="Ảnh 5">
+            <img src="gen-h-z7618053867056_d967bb2afa9d39f0e86bd538b1eb09ef.jpg" alt="Ảnh 6">
+        </div>
+        <p class="gratitude-text">
+            "Tri ân những phút giây vui chơi. Đi học thì ít mà tấu hài, tụ tập nói chuyện thì nhiều. Cảm ơn Trụ vì đã luôn là một người bạn tuỵt vời, sẵn sàng lắng nghe và cùng 9 chú bướm này tạo nên một kỷ niệm đẹp."
+        </p>
+        <button class="btn-next" onclick="goToSlide('slide-3')">Xem khoảnh khắc 3 ➡️</button>
+    </div>
+
+    <div id="slide-3" class="slide">
+        <div class="video-container">
+            <video id="vid-moment" src="2026-01-08-123727-2064938978_bdpaxuGE_3dd1bdd20ab30d64737a2f370512aa20b68dcd9c.mp4" loop muted playsinline controls></video>
+        </div>
+        <p class="love-text">
+            "Những lúc gác lại bài vở để đi cùng nhau. Dù lầy lội, vô tri nhưng lại là những kỷ niệm vô giá. Yêu thương lắm cái đội hình bất ổn này! Chúc Trụ tuổi mới có thêm hàng vạn chuyến phiêu lưu và những nụ cười bất tận bên 9 chú bướm nhé!"
+        </p>
+        <button class="btn-next" onclick="goToSlide('slide-curtain')">Kết thúc trải nghiệm... 🎁</button>
+    </div>
+
+    <div id="slide-curtain" class="slide">
+        <div id="curtain-top"></div>
+        <div id="curtain-bottom"></div>
+        <div id="final-wishes">
+            <h1 class="final-title">CHÚC MỪNG SINH NHẬT!</h1>
+            <p class="final-msg">Chúc <span class="highlight-wishes">Trụ</span> gặp nhiều may mắn trong tuổi mới!</p>
+            <p class="final-msg" style="font-size: 1.3rem; margin-top: 15px;">Chúc tuổi mới thật rực rỡ và vững vàng, học đỉnh và mãi là fend vuýp <br>Chúc Trụ một tuổi mới happy !</p>
+        </div>
+    </div>
+
+    <script>
+        function goToSlide(slideId) {
+            // Dừng video nếu đang rời khỏi slide 3
+            if(slideId !== 'slide-3') {
+                const vid = document.getElementById('vid-moment');
+                if(vid) vid.pause();
+            }
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            const nextSlide = document.getElementById(slideId);
+            nextSlide.classList.add('active');
+
+            // Slide 1 -> Bắn pháo hoa
+            if(slideId === 'slide-1') {
+                shootConfetti();
+            }
+
+            // Slide 3 -> Tự động phát video
+            if(slideId === 'slide-3') {
+                const vid = document.getElementById('vid-moment');
+                if(vid) vid.play();
+            }
+
+            // Slide cuối -> Gọi hiệu ứng đóng rèm
+            if(slideId === 'slide-curtain') {
+                setTimeout(() => {
+                    nextSlide.classList.add('closed');
+                    // Bắn thêm đợt pháo hoa cuối cùng cho hoành tráng
+                    setTimeout(shootConfetti, 1500); 
+                }, 100);
+            } else {
+                const curtain = document.getElementById('slide-curtain');
+                curtain.classList.remove('closed');
+            }
+        }
+
+        // Xử lý Mật khẩu
+        document.getElementById('pass-input').addEventListener('keyup', function(e) {
+            if (this.value.length === 4) {
+                if (this.value === '1403') {
+                    // Pass đúng
+                    var passBox = document.getElementById('pass-box');
+                    passBox.style.borderColor = '#0fa';
+                    setTimeout(() => {
+                        goToSlide('slide-languages');
+                    }, 500);
+                } else {
+                    // Pass sai
+                    var passBox = document.getElementById('pass-box');
+                    passBox.classList.add('shake');
+                    setTimeout(() => {
+                        alert("Cảnh báo! Sai pass! Ủa alo Trụ? Quên luôn ngày đăng nhập server Việt Nam của mình rồi hả? Nhập lại lẹ lên!");
+                        passBox.classList.remove('shake');
+                        this.value = '';
+                    }, 400);
+                }
+            }
+        });
+
+        // Hàm bắn pháo hoa
+        function shootConfetti() {
+            var duration = 4 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+            function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
